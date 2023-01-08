@@ -1,0 +1,52 @@
+class Solution {
+public:
+    #define n 100005
+
+    class segtree {
+        int tree[n * 2] = {};  // Need to init
+        public:
+
+        int q(int l, int r) {
+            l += n, r += n;
+            int ret = 0;
+            while(l <= r) {
+                if(l % 2 == 1) ret += tree[l++];
+                if(r % 2 == 0) ret += tree[r--];
+                l /= 2, r /= 2;
+            }
+            return ret;
+        }
+
+        void mod(int i, int k) {
+            i += n;
+            tree[i] += k;
+            for(i /= 2; i >= 1; i /= 2)
+                tree[i] = tree[i * 2] + tree[i * 2 + 1];
+        }
+    };
+
+    long long goodTriplets(vector<int>& A, vector<int>& B) {
+        unordered_map<int, int> M;
+        for(int i = 0; i < B.size(); ++i) M[B[i]] = i;
+
+        for(int &i: A) i = M[i];
+
+        segtree l, r;
+
+        // build right
+        for(int i = 0; i < A.size(); ++i) r.mod(A[i], 1);
+
+        long ret = 0;
+        for(int i = 0; i < A.size(); ++i) {
+            int cur = A[i];
+            r.mod(cur, -1);
+            long lsum = l.q(0, cur - 1);
+            int rsum = r.q(cur + 1, A.size());
+            ret += lsum * rsum;
+            // update
+            l.mod(cur, 1);
+        }
+
+        return ret;
+    }
+};
