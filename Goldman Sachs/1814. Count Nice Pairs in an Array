@@ -1,0 +1,29 @@
+class Solution {
+public:
+const int MOD=1e9+7;
+int rever(int n){
+    int ans=0;
+    while(n){
+        ans=(ans*10)+(n%10);
+        n/=10;
+    }
+    return ans;
+}
+    int countNicePairs(vector<int>& nums) {
+        unordered_map<int,int> m;
+        for(auto k:nums){
+            int dif=k-rever(k);
+            m[dif]++;
+        }
+        int count=0;
+        for(auto a:m){
+            long n=a.second;
+            if(n<=1){
+                continue;
+            }
+            long ans=(long)(n*(n-1))/2;
+            count=((count%MOD)+(ans%MOD))%MOD;
+        }
+        return count;
+    }
+};
