@@ -1,0 +1,46 @@
+int findIntegers(int n) {
+    int dp[34][2];
+    dp[0][1]=1;
+    dp[0][0]=1;
+    
+    for(int i=1; i<33; i++)
+    {
+        dp[i][1] = dp[i-1][0];
+        dp[i][0] = dp[i-1][1] + dp[i-1][0];
+    }
+    string binnum;
+    int x=(1<<30);
+    for(int j=0; j<35; j++)
+    {
+        if((x&n)!=0)
+            binnum+='1';
+        else
+            binnum+='0';
+        x>>=1;
+        if(x<1)
+            break;
+    }
+    int ans=0;
+    bool b=true;
+    char prevbit=0;
+    for(int i=0; i<binnum.size(); i++)
+    {
+        int bitposi = binnum.size()-1-i;
+        if(binnum[i]=='1')
+        {
+            if(bitposi!=0)
+                ans+=(dp[bitposi-1][0]+dp[bitposi-1][1]);
+            else
+                ans++;
+            if(prevbit==binnum[i])
+            {
+                b=false;
+                break;
+            }
+        }
+        prevbit=binnum[i];
+    }
+    if(b)
+        ans++;
+    return ans;
+}
