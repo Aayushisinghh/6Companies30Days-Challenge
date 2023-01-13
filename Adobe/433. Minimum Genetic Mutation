@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int minMutation(string start, string end, vector<string>& bank) {
+        unordered_map<string,bool> used;
+        for (auto& b : bank) used[b] = false;
+
+        string choices = "ACGT";
+        int n = start.size(), m = choices.size();
+
+        queue<string> que;
+        que.push(start);
+        int answer = 0;
+        while (!que.empty()) {
+            int count = que.size();
+            for (int i = 0; i < count; i++) {
+                auto gene = que.front();
+                que.pop();
+
+                if (gene == end) {
+                    return answer;
+                }
+
+                for (int ii = 0; ii < n; ii++) {
+                    for (int jj = 0; jj < m; jj++) {
+                        char original = gene[ii];
+                        gene[ii] = choices[jj];
+                        if (used.find(gene) != used.end() and !used[gene]) {
+                            used[gene] = true;
+                            que.push(gene);
+                        }
+                        gene[ii] = original;
+                    }
+                }
+            }
+            answer++;
+        }
+        return -1;
+    }
+};
