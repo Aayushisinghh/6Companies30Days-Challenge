@@ -1,30 +1,30 @@
-class Solution {
-public:
-    int maxPoints(vector<vector<int>>& points) {
-        int res = 0;
-        for(int i = 0; i<points.size(); i++){
-            
-            unordered_map<long double,int> noOfPointsInLine;
-            
-            for(int j = i + 1; j < points.size(); j++){
-                // Two points  -  (x1,y1) and (x2,y2) for calculation slope 
-                int x1 = points[i][0], y1 = points[i][1], x2 = points[j][0], y2 = points[j][1];
-                
-                if(y2 == y1){         // y2 == y1 means slope is 0
-                    noOfPointsInLine[INT_MIN]++;
-                }else if(x1 == x2){   // x2 == x1 means slope is infinite
-                    noOfPointsInLine[INT_MAX]++;
-                }else{                // other cases solpe b/w 0 to infinite
-                    long double slope = (long double)(y2 - y1) /(long double)(x2 - x1);
-                    noOfPointsInLine[slope]++;
-                }
-                
-            }
-            // calculate no. of points in one line
-            for(auto i : noOfPointsInLine){
-                res = max(i.second,res);
-            }
+bool solve(vector<int> nums,vector<bool>& visited,int currsum,int idx,int subsetsum,int k){
+        if(k==0)return true;
+        if(currsum>subsetsum)return false;
+        if(currsum==subsetsum){
+            return solve(nums,visited,0,0,subsetsum,k-1);
         }
-        return res + 1;
+        for(int i=idx;i<nums.size();i++){
+            if(visited[i])continue;
+            visited[i] = true;
+            if(solve(nums,visited,currsum+nums[i],i+1,subsetsum,k))return true;
+            visited[i] = false;
+			//optimization 
+            if(currsum==0)break;
+        }
+        return false;
     }
-};
+    bool canPartitionKSubsets(vector<int>& nums, int k) {
+        int n = nums.size();
+        if(k > n)return false;
+        int sum=0;
+        for(auto n : nums)
+            sum += n;
+       if (nums.size() < k || sum % k) return false;
+        int subsetsum = sum/k;
+        vector<bool> v(n,false);
+		//sort array in decreasing order
+        sort(nums.begin(), nums.end(), greater<int>());
+        return solve(nums,v,0,0,subsetsum,k);
+    }
+    
