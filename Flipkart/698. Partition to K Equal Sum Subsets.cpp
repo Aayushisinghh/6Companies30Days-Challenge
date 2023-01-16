@@ -1,4 +1,6 @@
-bool solve(vector<int> nums,vector<bool>& visited,int currsum,int idx,int subsetsum,int k){
+class Solution {
+public:
+    bool solve(vector<int> nums,vector<bool>& visited,int currsum,int idx,int subsetsum,int k){
         if(k==0)return true;
         if(currsum>subsetsum)return false;
         if(currsum==subsetsum){
@@ -28,3 +30,4 @@ bool solve(vector<int> nums,vector<bool>& visited,int currsum,int idx,int subset
         return solve(nums,v,0,0,subsetsum,k);
     }
     
+};
