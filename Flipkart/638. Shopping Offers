@@ -1,0 +1,54 @@
+class Solution {
+public:
+    #define ll long long
+    unordered_map<ll,ll>mp;
+
+    int hash(vector<int>&needs,int row){
+        ll current=row;
+        for(auto &x:needs){
+            current=10*current+x;
+        }
+        return current;
+    }
+
+    ll solve(vector<int>needs,vector<int>&price,vector<vector<int>>&special,ll row,ll n,ll m){
+        if(row==m){
+            ll cost=0;
+            for(ll i=0;i<n;i++){
+                cost+=(needs[i]*price[i]);
+            }
+            return cost;
+        }
+        int temp=hash(needs,row);
+        if(mp.find(temp)!=mp.end()){
+            return mp[temp];
+        }
+        ll answer=INT_MAX,count=1;
+        answer=min(answer,solve(needs,price,special,row+1,n,m));
+        while(1){
+            bool condition=true;
+            for(ll i=0;i<n;i++){
+                if(needs[i]>=special[row][i]){
+                    needs[i]-=special[row][i];
+                }
+                else{
+                    condition=false;
+                    break;
+                }
+            }
+            if(condition){
+                answer=min(answer,count*special[row][n]+solve(needs,price,special,row+1,n,m));
+                count++;
+            }
+            else{
+                break;
+            }
+        }
+        return mp[temp]=answer;
+    }
+
+    int shoppingOffers(vector<int>& price, vector<vector<int>>& special, vector<int>& needs) {
+        ll n=price.size(),m=special.size();mp.clear();
+        return solve(needs,price,special,0,n,m);
+    }
+};
