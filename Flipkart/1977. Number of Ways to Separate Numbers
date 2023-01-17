@@ -1,0 +1,22 @@
+class Solution {
+public:
+  
+  int helper(string& num, int idx, string last){
+    if(num.size() == idx){ return 1; }
+    int count = 0;
+    if(num[idx] != '0'){
+      for(int i=idx; i<num.size(); ++i){
+        string s = num.substr(idx, i-idx+1);
+        if(s.size() < last.size()){ continue; }
+        if(last.size() < s.size() || s >= last){
+          count += helper(num, i+1, s);
+        }
+      }
+    }
+    return count;
+  }
+  
+  int numberOfCombinations(string num) {
+    return helper(num, 0, "0");
+  }
+};
