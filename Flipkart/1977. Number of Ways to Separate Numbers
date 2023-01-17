@@ -20,3 +20,116 @@ public:
     return helper(num, 0, "0");
   }
 };
+
+
+----------------------------------------OR--------------------------------------------
+
+
+constexpr int mod = 1e9 + 7;
+
+class Solution {
+    using arr_2d = vector<vector<int>>; // typedef 
+private:
+    int m_n; // string length
+
+    // pointer for opacity  
+	arr_2d *m_dp;
+	   
+public:
+        
+    // this is a algorithm of upper slice of variants 
+    // example 9,9,9,99,99,99,999 => 9* , 99*, 999* ...
+    // let 'inx'  -  upper slice (length of current group) 
+    // number of commas among groups is equal to number of groups of string minus one
+    // count of group (999) in current string is n/inx
+    // remain for next group =  n - inx * group_iterator
+    // result = 1 + available position count  of comma by group  '99'
+    // because group '9' have not its commas
+    // see case 3
+    int chainsOfRepeat(int n, int slice){  
+        int x = 0;       
+        switch(slice){
+            case 0:
+            case 1: return 1;
+            case 2: return n/2 +1;
+            case 3: 
+                for(int i = 0; i <= n; i += slice) x += 1 + (n - i)/2; break;
+            default:
+                for(int a = 0; a <= n; a += slice){
+                    const int new_n = n - a;
+                    if(new_n < 2 || slice -1 < 2){
+                        x++; continue;
+                    }
+                    if(slice  == 3){ // slice - 1 == 2, so next_slice == 2
+                        x = ( x + new_n/2 + 1) % mod;
+                        continue;
+                    }
+                    
+                    const int new_slice = min(slice -1, new_n);                    
+                    const long l = (*m_dp)[new_n -1][new_slice-1];
+                    
+                    if(l < 0){ // NEGATIVE. It's a distanced with CLP values
+                        x = (x - l) % mod; // x += cached_value
+                        continue;
+                    }
+                    
+                    x = (x + chainsOfRepeat(new_n, new_slice)) % mod;
+                }     
+        }                
+      
+       (*m_dp)[n-1][slice-1] = -x; // NEGATIVE. Save to cache
+        
+       return x; 
+    }   
+   
+        
+    int numberOfCombinations(string &num) {
+        m_n = num.size();
+		if(!m_n || num[0] == '0') return 0;
+		if( m_n < 2) return m_n;
+		   		
+        // common largest prefix (LCP) (below diagonal) 
+        //and dp (diagonal & up of diagonal)
+        //and cache for a algorithm of upper slice of variants (NEGATIVE values) 
+        
+        arr_2d clp(m_n + 1, vector<int>(m_n)); 
+                
+	   for (int i = m_n - 1; i >= 0; --i){           
+           clp[0][i] = 1; //dp
+           for (int j = i + 1; j < m_n; ++j)
+               if(num[i] <= num[j]) //clp
+                    clp[j][i] = num[i] == num[j] ? clp[j + 1][i + 1] + 1 : mod;
+       }
+        
+        if(clp[1][0] == m_n -1){
+            m_dp = &clp;	    
+            return chainsOfRepeat(m_n, m_n);  
+        } 
+
+        // i= start of a being explored suffix, previous 'i' are already calculated values  
+        for(int i=1; i < m_n; ++i){ 
+            // skip
+            if(num[i]=='0') { for(int j = i; j< m_n; ++j)clp[i][j] = clp[i-1][j]; continue; } 
+                        
+            int prev_diag{clp[i-1][i-1]}; 
+            
+            for(int j = i; j< m_n; ++j){ // j = end of a being explored suffix, but not string
+                
+                long angul{(clp[i-1][j]+ prev_diag) % mod}; //a bottom of the funnel of gathering values
+                if(i + i < j +1){ //there is no a correction of a triangle (of gathering values) in previous step
+                    for( ;j< m_n; ++j)clp[i][j] = angul;// padding to end of line
+                    break; // next i
+                }                
+                int len = j-i+1, prev  = i-len, lnLP = clp[i][prev], corr;   
+                if(lnLP >= len || num[prev + lnLP] < num[i + lnLP])                    
+                    corr = prev ? clp[prev-1][i-1] : 0; // not regress of numbers
+                 else
+                    corr = clp[prev][i-1]; // there is a regress of numbers
+                                               
+                 clp[i][j] = (angul - corr + mod) % mod; 
+            }
+        }
+        
+        return clp[m_n-1][m_n-1];  
+    }    
+};
