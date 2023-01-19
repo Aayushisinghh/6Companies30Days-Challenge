@@ -1,0 +1,43 @@
+class Solution {
+public:
+    bool hasAllCodes(string s, int k) {
+        int n=pow(2,k);      //for k ther will be 2^k possible binary codes
+        vector<int> v(n,0);    //Initialise with zero , change 0 to 1 if this binary code is present in the string
+        
+        int m=s.length();
+        if(k>m) return false;
+        
+        vector<int> hash(m-(k-1),0);        //to store hash value of all substring of size k
+        
+        for(int i=0;i<m-(k-1);i++)
+        {
+            //We have to calculate the value of fisrt binary number of length k
+            
+            if(i==0)
+            {
+                for(int j=0;j<k;j++)
+                {
+                    hash[0]=((hash[0]<<1)+int(s[j]-'0'));
+                }
+            }
+            //after that we  will just remove leftmost digit and add a digit to right
+            else
+            {
+                hash[i]=hash[i-1]-(hash[i-1]&(1<<k-1));
+                hash[i]=hash[i]<<1;
+                hash[i]+=int(s[i+k-1]-'0'); 
+            }
+        }
+        
+        for(int i=0;i<m-(k-1);i++)
+        {
+            v[hash[i]]=1;
+        }
+        for(int i=0;i<n;i++)
+        {
+            if(v[i]) continue;
+            return false;
+        }
+        return true;
+    }
+};
