@@ -1,30 +1,16 @@
 class Solution {
 public:
-    int maxPoints(vector<vector<int>>& points) {
-        int res = 0;
-        for(int i = 0; i<points.size(); i++){
-            
-            unordered_map<long double,int> noOfPointsInLine;
-            
-            for(int j = i + 1; j < points.size(); j++){
-                // Two points  -  (x1,y1) and (x2,y2) for calculation slope 
-                int x1 = points[i][0], y1 = points[i][1], x2 = points[j][0], y2 = points[j][1];
-                
-                if(y2 == y1){         // y2 == y1 means slope is 0
-                    noOfPointsInLine[INT_MIN]++;
-                }else if(x1 == x2){   // x2 == x1 means slope is infinite
-                    noOfPointsInLine[INT_MAX]++;
-                }else{                // other cases solpe b/w 0 to infinite
-                    long double slope = (long double)(y2 - y1) /(long double)(x2 - x1);
-                    noOfPointsInLine[slope]++;
-                }
-                
-            }
-            // calculate no. of points in one line
-            for(auto i : noOfPointsInLine){
-                res = max(i.second,res);
+    int maxConsecutive(int& bottom, int& top, vector<int>& special) {
+        sort(special.begin(),special.end());
+        int ans = 0;
+        for(int i = 0; i < special.size(); i++){
+            if(i==0){
+                ans = max(ans,special[0]-bottom);
+            }else{
+                ans = max(ans,special[i]-special[i-1]-1);
             }
         }
-        return res + 1;
+        ans = max(ans,top-special[special.size()-1]);
+            return ans;
     }
 };
