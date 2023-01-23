@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int totalFruit(vector<int>& fruits) {
+        unordered_map<int, int> seenTrees;
+        
+        int uniqueTrees = 0;
+        for (int i = 0; i < fruits.size(); i++) seenTrees[fruits[i]] = 0;
+        
+        int start = 0, maxLength = 0, maxStreak = 0;
+        
+        for (int end = 0; end < fruits.size(); end++) {
+            if (seenTrees[fruits[end]] == 0)
+                uniqueTrees++;
+            
+            seenTrees[fruits[end]]++; 
+            maxStreak  = max(maxStreak, seenTrees[fruits[end]]);
+            if (uniqueTrees > 2) {
+                seenTrees[fruits[start]]--;
+                uniqueTrees -= seenTrees[fruits[start]] == 0? 1: 0;
+                start++;
+            }
+            maxLength = max(maxLength, end - start + 1);
+        }
+        
+        return maxLength;
+    }
+};
