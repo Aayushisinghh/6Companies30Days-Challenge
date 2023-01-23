@@ -1,0 +1,28 @@
+class Solution {
+public:
+    long long base = 31 , mod = 1011001110001111;
+    long long prev[2001];
+    unordered_map<long long,int> mp;
+    int distinctEchoSubstrings(string s) {
+         int n = s.size();
+         for(int i=1; i<=n/2; i++) {
+               long long hash = 0 , limit = 1;
+               int l = 0;
+               for(int k=0; k<n; k++) {
+                     hash = (( hash * base ) % mod  + (s[k] - 'a' + 1))%mod;
+                     if(k>=i-1) {
+                         prev[k]=hash;
+                         if(k >= 2*i - 1 && prev[k-i]==hash) {
+                              mp[hash]++;
+                         }
+                         hash = (hash - ((s[l] - 'a' + 1)*limit)%mod)%mod;
+                         if(hash<0) hash+=mod;
+                         l++;
+                     }else {
+                         limit =( limit * base ) % mod;
+                     }
+               }
+         }
+        return mp.size();
+    }
+};
