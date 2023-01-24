@@ -1,0 +1,18 @@
+class Solution {
+public:
+    int maxCoins(vector<int>& piles) {
+        
+        sort( piles.rbegin(),piles.rend() ); // rbegin() and rend() for desc
+        
+        int loopLimit = piles.size() - piles.size()/3;
+        
+        int sum=0;
+        
+        for(int i=1;i< loopLimit; i+=2 )
+        {
+            sum+= piles[i];
+            
+        }
+        return sum;
+    }
+};
