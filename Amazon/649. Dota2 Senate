@@ -1,0 +1,42 @@
+class Solution {
+public:
+    string predictPartyVictory(string senate) {
+        int radiants = 0, dires = 0;
+        int n = senate.size();
+        for(auto i:senate){
+            if(i == 'R') radiants++;
+            else dires++;
+        } 
+        int r = 0, d = 0;
+        while(radiants && dires){
+            int j = -1;
+            for(int i=0; i<n; i++){
+                senate[++j] = senate[i];
+                // if we encounter R
+                if(senate[j] == 'R'){
+                    // if it can be blocked
+                    if(d){
+                        // delete R by moving j backwards
+                        j--; radiants--; d--;
+                    }
+                    // else increase r
+                    else r++;
+                } 
+                // if we encounter D
+                else{
+                    // if it can be blocked
+                    if(r){
+                        // delete d by moving backwards
+                        j--; dires--; r--;
+                    }
+                    // else increase d
+                    else d++;
+                }
+            }
+            // new length of string becomes j+1 after deletions
+            n = j+1;
+        }
+        if(radiants) return "Radiant";
+        return "Dire";
+    }
+};
