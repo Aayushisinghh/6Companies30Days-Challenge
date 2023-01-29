@@ -1,0 +1,49 @@
+class Solution {
+public:
+    vector<vector<string>> mostPopularCreator(vector<string>& creators, vector<string>& ids, vector<int>& views) {
+        // support variables
+        unordered_map<string, pair<string, int>> bestVideos;
+        unordered_map<string, int> creatorTotal;
+        int len = ids.size(), maxViews = 0;
+        vector<vector<string>> res;
+        // parsing each creator
+        for (int i = 0, currTotal, resPos, currViews; i < len; i++) {
+            // initialising loop variables
+            auto &currCreator = creators[i], &currId = ids[i];
+            currViews = views[i];
+            // updating bestVideos entry for currCreator
+            auto videoData = bestVideos.find(currCreator);
+            // case 1: first video for this author
+            if (videoData == end(bestVideos)) bestVideos[currCreator] = {currId, currViews};
+            // case 2: already seen and with lower best views
+            else if (videoData->second.second < currViews) videoData->second = {currId, currViews};
+            // case 3: already seen and with same best views
+            else if (videoData->second.second == currViews) videoData->second.first = min(videoData->second.first, currId);
+            // updating total views for the user and checking if we have a new maximum
+            currTotal = creatorTotal[currCreator] += currViews;
+            // case 1: current views == maxViews
+            if (currViews && currTotal == maxViews) {
+                res.push_back({currCreator, bestVideos[currCreator].first});
+            }
+            // case 2: current views > maxViews
+            else if (currTotal > maxViews) {
+                maxViews = currTotal;
+                res.clear();
+                res.push_back({currCreator, bestVideos[currCreator].first});
+            }
+            // case 3: currViews == 0 and maxViews == 0 
+            else if (!currViews && !maxViews) {
+                bool alreadyInRes = false;
+                for (int j = 0, lmt = res.size(); j < lmt; j++) {
+                    if (res[j][0] == currCreator) {
+                        res[j] = {currCreator, bestVideos[currCreator].first};
+                        alreadyInRes = true;
+                        break;
+                    }
+                }
+                if (!alreadyInRes) res.push_back({currCreator, bestVideos[currCreator].first});
+            }
+        }
+        return res;
+    }
+};
