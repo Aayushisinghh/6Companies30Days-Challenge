@@ -1,0 +1,35 @@
+/*
+ * You will find changing directions is irrelevant to the result
+ * time: O(M + N)
+ * space: O(1)
+ */
+
+class Solution {
+public:
+    int getLastMoment(int n, vector<int>& left, vector<int>& right) {
+        int leftSize = left.size();
+        int rightSize = right.size();
+        int maxLeft = 0;
+        int maxRight = INT_MAX;
+        for (int i = 0; i < leftSize; i++) {
+            maxLeft = std::max(maxLeft, left[i]);
+        }
+        for(int i = 0; i < rightSize; i++) {
+            maxRight = std::min(maxRight, right[i]);
+        }
+        if (rightSize) {
+            maxRight = n - maxRight;
+        }
+        if (leftSize && rightSize) {
+            return std::max(maxLeft, maxRight);
+        }
+        if ((!leftSize) && (!rightSize)) {
+            return 0;
+        }
+        if (leftSize) {
+            return maxLeft;
+        } else {
+            return maxRight;
+        }
+    }
+};
